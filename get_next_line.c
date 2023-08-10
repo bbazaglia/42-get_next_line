@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 10:41:50 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/10 10:56:13 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 * A buffer is a temporary storage area that stores data while it is being transferred from one place to another.
 * In this program, the buffer is used to temporarily hold data read from the file descriptor until complete lines can be extracted.
 
--> Static vs. Non-Static Variables
+-> Static vs. Non-Static Variables?
 * The memory for static variables is allocated once when the program starts and is retained until the program terminates.
 * The memory for non-static variables is allocated every time the function is called and is released when the function ends.
 
@@ -51,6 +51,25 @@
 -> What buffer size should we use?
 * The choice of BUFFER_SIZE depends on a trade-off between efficiency and memory usage. 
 * A reasonable buffer size is typically in the range of a few kilobytes (e.g., 1024 or 4096 bytes).
+
+-> How to handle different buffer and line sizes?
+* The function has to dynamically allocate memory for the buffer and line as needed.
+* Instead of using a fixed-size buffer, you can allocate memory for the buffer based on the BUFFER_SIZE value.
+* The buffer size can be changed by recompiling the program with a different value for BUFFER_SIZE.
+* Similarly, when constructing the line, you can dynamically allocate memory to accommodate the variable line lengths.
+
+-> How to handle lines longer than the buffer size?
+1) Keep Track of Incomplete Line Fragments.
+    If a line spans across multiple buffer reads, you need to keep track of the incomplete line fragments at the end of the buffer.
+2) Memory Reallocation.
+    When extending a line that spans across buffers, use memory reallocation to ensure that you have enough space to accommodate the entire line. 
+3) Reset Buffer and Update Buffer Position and Size.
+    After processing an incomplete line that spans multiple buffers, you need to reset the buffer and update the buffer position and size to reflect the remaining data in the buffer. 
+4) Concatenate Line Fragments from Different Buffers.
+    If a line spans multiple buffers, concatenate the data from different buffers to reconstruct the complete line.
+    You can use the ft_strjoin() function to concatenate the line fragments from the previous buffer with the line fragments from the current buffer.
+5) Null-Termination.
+    Ensure that the reconstructed line is null-terminated so that string manipulation functions can be safely used on it.
 
 -> Return values of get_next_line():
 * correct behavior: the line that was read (including the terminating ’\n’ character, if present);
