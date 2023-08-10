@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 10:56:13 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:14:41 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,13 @@
 5) Null-Termination.
     Ensure that the reconstructed line is null-terminated so that string manipulation functions can be safely used on it.
 
+-> How to handle the situation in which the content of the file changes between successive calls to get_next_line()?
+* If  the file pointer is moved or data is added/removed, it can lead to undefined behavior or unexpected results.
+    If new data is added to the file after a read() operation but before a subsequent read(), the function might miss or incorrectly process the new data. 
+    Similarly, if data is removed, the function might read data that no longer exists.
+* After every read operation, reset the buffer and the file position to the beginning of the buffer. 
+    This ensures that the function starts reading from a consistent position in the file.
+
 -> Return values of get_next_line():
 * correct behavior: the line that was read (including the terminating ’\n’ character, if present);
 * there is nothing to read or an error occurred: NULL. */
@@ -78,4 +85,3 @@
 char *get_next_line(int fd)
 {
 }
-
