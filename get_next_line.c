@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 11:14:41 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/10 17:19:30 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@
 * The function has to dynamically allocate memory for the buffer and line as needed.
 * Instead of using a fixed-size buffer, you can allocate memory for the buffer based on the BUFFER_SIZE value.
 * The buffer size can be changed by recompiling the program with a different value for BUFFER_SIZE.
-* Similarly, when constructing the line, you can dynamically allocate memory to accommodate the variable line lengths.
+* Similarly, when constructing the line, you can dynamically allocate memory to accommodate the variable line ft_strlens.
 
 -> How to handle lines longer than the buffer size?
 1) Keep Track of Incomplete Line Fragments.
@@ -72,16 +72,65 @@
     Ensure that the reconstructed line is null-terminated so that string manipulation functions can be safely used on it.
 
 -> How to handle the situation in which the content of the file changes between successive calls to get_next_line()?
-* If  the file pointer is moved or data is added/removed, it can lead to undefined behavior or unexpected results.
-    If new data is added to the file after a read() operation but before a subsequent read(), the function might miss or incorrectly process the new data. 
-    Similarly, if data is removed, the function might read data that no longer exists.
-* After every read operation, reset the buffer and the file position to the beginning of the buffer. 
+* If  the file pointer is moved or data is added/removed,
+	it can lead to undefined behavior or unexpected results.
+    If new data is added to the file after a read() operation but before a subsequent read(),
+	the function might miss or incorrectly process the new data. 
+    Similarly, if data is removed,
+	the function might read data that no longer exists.
+* After every read operation,
+	reset the buffer and the file position to the beginning of the buffer. 
     This ensures that the function starts reading from a consistent position in the file.
 
 -> Return values of get_next_line():
-* correct behavior: the line that was read (including the terminating ’\n’ character, if present);
+* correct behavior: the line that was read (including the terminating ’\n’ character,
+		if present);
 * there is nothing to read or an error occurred: NULL. */
 
-char *get_next_line(int fd)
+#include "get_next_line.h"
+
+char	*get_next_line(int fd)
 {
+	static char	buffer[BUFFER_SIZE];
+	char		*line;
+	int			bytes_read;
+	int			buffer_position;
+	char		current_char;
+	char		*new_line;
+
+	bytes_read = 1;
+	buffer_position = 0;
+    line = NULL;
+    
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+        
+    while (buffer[buffer_position] != '\n' && buffer[buffer_position] != '\0')
+	{
+		// if the buffer is empty, read more data from the file descriptor
+		if (buffer_position == bytes_read)
+		{
+			bytes_read = read(fd, buffer, BUFFER_SIZE);
+			buffer_position = 0;
+		}
+		if (bytes_read <= 0)
+			return (NULL);
+		current_char = buffer[bytes_read];
+        // if newline character encountered, return the current line
+        if (current_char == '\n')
+        {
+	        new_line = ft_calloc(ft_strlen(line) + buffer_position + 1, sizeof(char));
+	        if (new_line == NULL)
+		        return (NULL);
+	        // copy content of line into new_line
+	        ft_strlcpy(new_line, line, ft_strlen(line) + 1);
+        	// copy content of buffer from 0 to buffer_position into new_line starting at line ft_strlen
+	        ft_strlcpy(new_line, buffer, buffer_position + 1);
+	        return (new_line);
+        }
+        // append current character to the line
+        line = ft_strjoin(line, current_char);
+        // move to the next character in the buffer
+	    buffer_position++;
+	}
 }

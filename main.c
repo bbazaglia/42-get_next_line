@@ -1,24 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/09 11:22:34 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 16:52:25 by bbazagli         ###   ########.fr       */
+/*   Created: 2023/08/10 13:32:44 by bbazagli          #+#    #+#             */
+/*   Updated: 2023/08/10 17:12:31 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
 
-#ifndef BUFFER_SIZE  
-# define BUFFER_SIZE 1024
+int	main(void)
+{
+    int fd;
+    char *line;
 
-#include <unistd.h>
-#include <stdlib.h>
-
-char *get_next_line(int fd);
-
-#endif
+    fd = open("the_little_prince.txt", O_RDONLY);
+    
+    // create an infinite loop
+    while (1)
+    {
+        line = get_next_line(fd);
+        if (line == NULL)
+            break ;
+        printf("%s", line);   
+        free(line)
+    }
+    return (0);
+}
