@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/23 16:01:05 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/23 16:25:07 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ So, after all, what the heck is this "line" variable?
 If you're trying to get your first next line, it will be initialized as NULL and then updated to the bytes read.
 If you're trying to get any other next line, it will be initialized as the remainder of the last read call made and then updated to the sum of it with the bytes read. */
 
-char    *read_and_join(int fd, char *line)
+char    *read_fd(int fd, char *line)
 {
     char *buffer;
     int bytes_read;
