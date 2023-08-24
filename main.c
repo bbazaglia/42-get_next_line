@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:32:44 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/24 10:32:46 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/24 12:30:35 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	main(void)
 	fd1 = open("thelittleprince.txt", O_RDONLY);
    
 	i = 0;
-	while (i < 120)
+	while (i < 5)
 	{
 		line = get_next_line(fd1);
 		printf("line [%02d]: %s", i, line);

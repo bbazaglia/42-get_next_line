@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/24 10:26:51 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/24 13:34:01 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,10 @@ So, after all, what the heck is this "line" variable?
 If you're trying to get your first next line, it will be initialized as NULL and then updated to the bytes read.
 If you're trying to get any other next line, it will be initialized as the remainder of the last read call made and then updated to the sum of it with the bytes read. */
 
-char    *ft_read_fd(int fd, char *unfiltered_line)
+char    *ft_read_fd(int fd, char *unfiltered_line, int *bytes_read)
 {
     char *buffer;
-    int bytes_read;
+    char *temp;
     
     // we're reading for the fist time or the previous call didn't left behind any fragment after the newline
     if (!unfiltered_line)
@@ -83,21 +83,24 @@ char    *ft_read_fd(int fd, char *unfiltered_line)
     buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
     
     // itialize the "bytes read" to 1 so it executes the loop at least once
-    bytes_read = 1;
+    *bytes_read = 1;
 
     // keep reading as long as we don't meet with a newline character and there are still bytes to read
-    while (!ft_strchr(buffer, '\n') && bytes_read != 0)
+    while (!ft_strchr(unfiltered_line, '\n') && *bytes_read != 0)
     {
-        bytes_read = read(fd, buffer, BUFFER_SIZE);
+        *bytes_read = read(fd, buffer, BUFFER_SIZE);
         // if the read operation fails, return NULL
-        if (bytes_read == -1)
+        if (*bytes_read == -1)
         {
             free(buffer);
+            free(unfiltered_line);
             return (NULL);
         }
         // null terminate the buffer so we can work with this data as a string (every string is null terminated)
-        buffer[bytes_read] = '\0';
-        unfiltered_line = ft_strjoin(unfiltered_line, buffer);
+        buffer[*bytes_read] = '\0';
+        temp = unfiltered_line;
+        unfiltered_line = ft_strjoin(temp, buffer);
+        free(temp);
     }
     free(buffer);
     return (unfiltered_line);
@@ -160,13 +163,19 @@ char	*get_next_line(int fd)
 {
     char        *next_line;
     static char *unfiltered_line;
+    int bytes_read;
     
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);       
-	unfiltered_line = ft_read_fd(fd, unfiltered_line);
+	unfiltered_line = ft_read_fd(fd, unfiltered_line, &bytes_read);
 	if (!unfiltered_line)
 		return (NULL);
 	next_line = ft_filter_line(unfiltered_line);
 	unfiltered_line = ft_rest_unfiltered(unfiltered_line);
+    if (next_line == NULL && bytes_read == 0)
+    {
+        free (unfiltered_line);
+        return (NULL);
+    }
 	return (next_line);
 }
