@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:25:53 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 15:18:40 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/24 10:28:09 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,20 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+char	*ft_strchr(const char *s, int c)
 {
-	size_t src_len;
-	size_t i;
+	char	*ptr;
 
-	src_len = ft_strlen(src);
-	i = 0;
-	if (size > 0)
+	ptr = (char *)s;
+	while (*ptr != '\0')
 	{
-		while (i < (size - 1) && src[i])
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		dst[i] = '\0';
+		if (*ptr == (unsigned char)c)
+			return (ptr);
+		ptr++;
 	}
+	if (*ptr == (unsigned char)c)
+		return (ptr);
+	return (NULL);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -66,6 +64,20 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (new);
 }
 
+void	*ft_memset(void *str, int c, size_t n)
+{
+	unsigned char	*p;
+
+	p = (unsigned char *)str;
+	while (n > 0)
+	{
+		*p = (unsigned char)c;
+		p++;
+		n--;
+	}
+	return (str);
+}
+
 void	*ft_calloc(size_t nelem, size_t elsize)
 {
 	void	*ptr;
@@ -82,3 +94,4 @@ void	*ft_calloc(size_t nelem, size_t elsize)
 	ft_memset(ptr, 0, total_size);
 	return (ptr);
 }
+

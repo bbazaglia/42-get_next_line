@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/23 16:25:07 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/24 10:26:51 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 * As the function reads lines from the file descriptor and stores them in the buff, it can continue reading from where it left off in the previous iteration.
 
 -> Why the buff size impacts the performance of the program?
-* The buff size is the number of bytes that the read() function will read from the file descriptor at each iteration.
+* The buff size is the number of bytes that the read function will read from the file descriptor at each iteration.
 - A very small buff size (e.g., 1) means the function reads only one byte at a time from the file descriptor.
     This could lead to many I/O operations, making the process less efficient due to the overhead associated with each read operation.
     Additionally, processing data byte by byte can introduce complexity when dealing with multi-byte character encodings.
@@ -70,24 +70,22 @@ So, after all, what the heck is this "line" variable?
 If you're trying to get your first next line, it will be initialized as NULL and then updated to the bytes read.
 If you're trying to get any other next line, it will be initialized as the remainder of the last read call made and then updated to the sum of it with the bytes read. */
 
-char    *read_fd(int fd, char *line)
+char    *ft_read_fd(int fd, char *unfiltered_line)
 {
     char *buffer;
     int bytes_read;
     
     // we're reading for the fist time or the previous call didn't left behind any fragment after the newline
-    if (!line)
-        line = ft_calloc(1, 1);
+    if (!unfiltered_line)
+        unfiltered_line = ft_calloc(1, sizeof(char));
 
-    // allocate memory for the buffer && check if the allocation was successful 
+    // allocate memory for the buffer and initialize it to zero
     buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-    if (!buffer)
-        return (NULL);
-        
+    
     // itialize the "bytes read" to 1 so it executes the loop at least once
     bytes_read = 1;
 
-    // keep reading as long as we don't get to the end of the line and there are still bytes to read
+    // keep reading as long as we don't meet with a newline character and there are still bytes to read
     while (!ft_strchr(buffer, '\n') && bytes_read != 0)
     {
         bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -99,20 +97,76 @@ char    *read_fd(int fd, char *line)
         }
         // null terminate the buffer so we can work with this data as a string (every string is null terminated)
         buffer[bytes_read] = '\0';
-        line = ft_strjoin(line, buffer);
+        unfiltered_line = ft_strjoin(unfiltered_line, buffer);
     }
-    return (free(buffer), (line));
+    free(buffer);
+    return (unfiltered_line);
 }
 
-// char	*get_next_line(int fd)
-// {
-//     char        *next_line;
-//     static char *buff;
-    
-// 	if (fd < 0 || BUFFER_SIZE <= 0)
-// 		return (NULL);       
+char    *ft_filter_line(char *unfiltered_line)
+{
+    int i;
+    char  *filtered_line;
 
-//     buff = read_and_join(fd, buff);
-//     if (!buff)
-//         return (NULL);
-// }
+    i = 0;
+	if (!unfiltered_line[i])
+		return (NULL);
+	while (unfiltered_line[i] && unfiltered_line[i] != '\n')
+		i++;
+	filtered_line = ft_calloc(i + 2, sizeof(char));
+	if (!filtered_line)
+		return (NULL);
+	i = 0;
+	while (unfiltered_line[i] && unfiltered_line[i] != '\n')
+	{
+		filtered_line[i] = unfiltered_line[i];
+		i++;
+	}
+	if (unfiltered_line[i] == '\n')
+	{
+		filtered_line[i] = unfiltered_line[i];
+		i++;
+	}
+	return (filtered_line);
+} 
+
+char	*ft_rest_unfiltered(char *unfiltered_line)
+{
+	int		i;
+	int		j;
+	char	*rest_line;
+
+	i = 0;
+	while (unfiltered_line[i] && unfiltered_line[i] != '\n')
+		i++;
+	if (!unfiltered_line[i])
+	{
+		free(unfiltered_line);
+		return (NULL);
+	}
+	rest_line = ft_calloc(ft_strlen(unfiltered_line) - i + 1, sizeof(char));
+	if (!rest_line)
+		return (NULL);
+	i++;
+	j = 0;
+	while (unfiltered_line[i])
+		rest_line[j++] = unfiltered_line[i++];
+	free(unfiltered_line);
+	return (rest_line);
+}
+
+
+char	*get_next_line(int fd)
+{
+    char        *next_line;
+    static char *unfiltered_line;
+    
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);       
+	unfiltered_line = ft_read_fd(fd, unfiltered_line);
+	if (!unfiltered_line)
+		return (NULL);
+	next_line = ft_filter_line(unfiltered_line);
+	unfiltered_line = ft_rest_unfiltered(unfiltered_line);
+	return (next_line);
+}

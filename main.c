@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:32:44 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/10 17:12:31 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/24 10:32:46 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,23 @@
 
 int	main(void)
 {
-    int fd;
-    char *line;
-
-    fd = open("the_little_prince.txt", O_RDONLY);
-    
-    // create an infinite loop
-    while (1)
-    {
-        line = get_next_line(fd);
-        if (line == NULL)
-            break ;
-        printf("%s", line);   
-        free(line)
-    }
-    return (0);
+	char	*line;
+	int		i;
+	int		fd1;
+	
+	fd1 = open("thelittleprince.txt", O_RDONLY);
+   
+	i = 0;
+	while (i < 120)
+	{
+		line = get_next_line(fd1);
+		printf("line [%02d]: %s", i, line);
+		free(line);
+		i++;
+	}
+	close(fd1);
+	return (0);
 }
+
+// to run this test: gcc -Wall -Werror -Wextra -D BUFFER_SIZE=xx get_next_line.c get_next_line_utils.c main.c && ./a.out
+// where xx is the BUFFER_SIZE you want to test
