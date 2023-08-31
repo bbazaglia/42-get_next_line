@@ -7,7 +7,7 @@ t_list	*ft_lstnew(void *content)
 	new = malloc(sizeof(t_list));
 	if (new == NULL)
 		return (NULL);
-	new->buff_str = content;
+	new->content = content;
 	new->next = NULL;
 	return (new);
 }
@@ -27,25 +27,42 @@ void ft_lstadd_back(t_list **lst, t_list *new_elem)
     last->next = new_elem;
 }
 
-void ft_lstclear(t_list **lst)
+// void ft_lstclear(t_list **lst)
+// {
+//     if (!lst || !*lst)
+//         return;
+
+//     t_list *current = *lst;
+//     t_list *temp;
+
+//     while (current)
+//     {
+//         temp = current->next;
+//         free(current->content);
+//         current->content = NULL;
+//         current->next = NULL;
+//         free(current);
+//         current = temp;
+//     }
+//     *lst = NULL;
+// }
+
+void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
-    if (!lst || !*lst)
-        return;
+	t_list	*tmp;
 
-    t_list *current = *lst;
-    t_list *temp;
-
-    while (current)
-    {
-        temp = current->next;
-        free(current->buff_str);
-        current->buff_str = NULL;
-        current->next = NULL;
-        free(current);
-        current = temp;
-    }
-    *lst = NULL;
+	if (lst == NULL || del == NULL)
+		return ;
+	while (*lst != NULL)
+	{
+		tmp = (*lst)->next;
+		del((*lst)->content);
+		free(*lst);
+		*lst = tmp;
+	}
+	*lst = NULL;
 }
+
 
 size_t	ft_strlen(const char *s)
 {
@@ -81,4 +98,20 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		new[i + s1len] = s2[i];
 	new[newlen] = '\0';
 	return (new);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	char	*ptr;
+
+	ptr = (char *)s;
+	while (*ptr != '\0')
+	{
+		if (*ptr == (unsigned char)c)
+			return (ptr);
+		ptr++;
+	}
+	if (*ptr == (unsigned char)c)
+		return (ptr);
+	return (NULL);
 }

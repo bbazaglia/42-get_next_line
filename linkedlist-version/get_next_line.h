@@ -16,14 +16,14 @@
 
 typedef struct s_list
 {
-    char            *buff_str;
+    char            *content;
     struct s_list   *next;
 }                   t_list;
 
 t_list *ft_lstnew(char *content);
 void ft_lstadd_back(t_list **lst, t_list *new_elem);
 void ft_lstdelone(t_list *elem);
-void ft_lstclear(t_list **lst);
+void	ft_lstclear(t_list **lst, void (*del)(void *));
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);

@@ -6,7 +6,7 @@
 /*   By: bbazagli <bbazagli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 11:24:42 by bbazagli          #+#    #+#             */
-/*   Updated: 2023/08/24 13:34:01 by bbazagli         ###   ########.fr       */
+/*   Updated: 2023/08/28 15:23:02 by bbazagli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,11 @@ We take the fragment of the line that was read in the call before plus the bytes
 
 So, after all, what the heck is this "line" variable? 
 If you're trying to get your first next line, it will be initialized as NULL and then updated to the bytes read.
-If you're trying to get any other next line, it will be initialized as the remainder of the last read call made and then updated to the sum of it with the bytes read. */
+If you're trying to get any other next line, it will be initialized as the remainder of the last read call made and then updated to the sum of it with the bytes read. 
+
+1 passagem: \0 + Carole\nB
+2 passagem: B + ia 
+*/
 
 char    *ft_read_fd(int fd, char *unfiltered_line, int *bytes_read)
 {
