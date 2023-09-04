@@ -1,3 +1,5 @@
+// ATTENTION: this code does not fits the norme of 42 School, it is only for learning purposes
+
 #include "get_next_line.h"
 
 // Function to insert a new node at the beginning of the linked list
