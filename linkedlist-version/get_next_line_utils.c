@@ -27,25 +27,6 @@ void ft_lstadd_back(t_list **lst, t_list *new_elem)
     last->next = new_elem;
 }
 
-// void ft_lstclear(t_list **lst)
-// {
-//     if (!lst || !*lst)
-//         return;
-
-//     t_list *current = *lst;
-//     t_list *temp;
-
-//     while (current)
-//     {
-//         temp = current->next;
-//         free(current->content);
-//         current->content = NULL;
-//         current->next = NULL;
-//         free(current);
-//         current = temp;
-//     }
-//     *lst = NULL;
-// }
 
 void	ft_lstclear(t_list **lst, void (*del)(void *))
 {

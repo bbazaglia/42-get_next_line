@@ -1,208 +1,181 @@
-#include "get_next_line.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-/* create function to create the list
-while '\n' is not present: allocate memory for the BUFFER_SIZE + 1 (null terminator) & check if operation was successful
-if operations fails, return NULL
+// Define the buffer size based on the compilation flag, or use a default value if not specified
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 100 // default buffer size
+#endif
 
-add a null terminator at the end of the variable 
-
-call a function to add the variable to the linked list */
-
-
-/* create a function to create a new node and  */
-
-// as we don't have a return value, if we passed only a pointer, all modifications made inside this function would not make a difference in the other function (where this one was called)
-
-
-// t_list    *ft_read_fd(int fd, t_list *head, int *bytes_read)
-// {
-//     t_list *buffer;
-//     t_list *current;
-    
-//     if (head == NULL)
-// 		ft_lstnew(head);
-
-// 	ft_lstnew()
-// 	buffer = malloc(sizeof(t_list));
-// 	buffer->content = ft_calloc(BUFFER_SIZE + 1, sizeof(char));	
-// 	buffer->next = NULL;
-
-//     *bytes_read = 1;
-
-//     while (!ft_strchr(head->content, '\n') && *bytes_read != 0)
-//     {
-//         *bytes_read = read(fd, buffer, BUFFER_SIZE);
-//         // if the read operation fails, return NULL
-//         if (*bytes_read == -1)
-//         {
-//             free(buffer);
-//             free(head);
-//             return (NULL);
-//         }
-//         // null terminate the buffer so we can work with this data as a string (every string is null terminated)
-//         buffer[*bytes_read] = '\0';
-//         current = head;
-//         head = ft_strjoin(current, buffer);
-//         free(current);
-//     }
-//     free(buffer);
-//     return (head);
-// }
-
-// char	*get_next_line(int fd)
-// {
-// 	static t_list	*head;
-// 	char			*line;
-
-// 	if (fd < 0 || BUFFER_SIZE <= 0)
-// 		return (NULL);
-        
-
-// }
-
-
-int	ft_read_fd(int fd, t_list **head, int *bytes_read)
+// Define the structure for a Node
+struct Node
 {
-	char	*buffer;
+    char *data; // Pointer to dynamically allocated string
+    struct Node *next;
+};
 
-	// WATCH OUT!!!!!!!
-	if (*head == NULL)
-	{
-		*head = ft_lstnew(NULL);
-		// head = malloc(sizeof(t_list));
-		// head->content = ft_calloc(1, sizeof(char));
-		// head->next = NULL;
-	}
+// Function to insert a new node at the beginning of the linked list
+struct Node *insertAtBeginning(struct Node *head, const char *newData)
+{
+    // Allocate memory for a new node
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
 
-	t_list	*current = *head;
+    // Check if memory allocation was successful
+    if (newNode == NULL)
+    {
+        printf("Memory allocation failed.\n");
+        exit(1); // Exit the program
+    }
 
-	*bytes_read = 1;
-	while (!ft_strchr(current->content, '\n') && *bytes_read != 0)
-	{
-		buffer = malloc(BUFFER_SIZE + 1);
-		*bytes_read = read(fd, current->content, BUFFER_SIZE);
-		if (*bytes_read == -1)
-		{
-			ft_lstclear(head, free);
-			// free(buffer->content);
-			// free(buffer);
-			// free(head->content);
-			// free(head);
-			free(buffer);
-			return (-1);
-		}
-		buffer[*bytes_read] = '\0';
+    // Dynamically allocate memory for the data and copy the string
+    newNode->data = strdup(newData);
 
-		ft_lstadd_back(head, ft_lstnew(buffer));
+    // Set the next pointer of the new node to the current head
+    newNode->next = head;
 
-		current = current->next;
-	}
-	return (0);
+    // Update the head to point to the new node
+    return newNode;
 }
 
-// WATCH OUT!!!!!!!!!!!!!!
-char	*ft_filter_line(t_list *head, t_list *rest)
+// Function to free the memory used by the linked list
+void freeLinkedList(struct Node *head)
 {
-	char	*filtered_line;
-	t_list	*current = head;
-
-	int i = 0;
-
-	if (!head || !head->content[i])
-		return (NULL);
-
-	int line_len = 0;
-
-	
-	while (current->content[i] != '\n')
-	{
-		if (current->content[i] == '\0')
-		{
-			current = current->next;
-			i = 0;
-		}
-		else 
-		{
-			i++;
-			line_len++;
-		}
-		if (current->content[i] == '\n')
-		{
-			line_len++;
-		}
-	}
-	
-	filtered_line = malloc(line_len + 1);
-	
-	rest = ft_lstnew(ft_strdup(current->content[line_len]));
-	
-	while (current && current->content[i] && current->content[i] != '\n')
-	{
-		filtered_line[i] = current->content[i];
-		i++;
-		if (current->content[i] == '\0')
-		{
-			current = current->next;
-			i = 0;
-		}
-	}
-	if (current != NULL && current->content[i] == '\n')
-	{
-		filtered_line[i] = current->content[i];
-		i++;
-	}
-	ft_lstclear(&head, free);
-	return (filtered_line);
+    struct Node *current = head;
+    while (current != NULL)
+    {
+        struct Node *next = current->next;
+        free(current->data); // Free the dynamically allocated string
+        free(current);       // Free the node itself
+        current = next;
+    }
 }
 
-
-t_list	*ft_rest_unfiltered(t_list *head)
+// Function to read a line from a file descriptor
+char *getNextLine(int fd)
 {
-	int		i;
-	t_list	*current;
-	t_list	*rest_line;
+    char *line = NULL;     // Pointer to the line
+    size_t lineSize = 0;   // Current size of the line buffer
+    size_t lineLength = 0; // Current length of the line being read
 
-	i = 0;
-	current = head;
-	while (current != NULL && current->content[i] && current->content[i] != '\n')
-		i++;
-	if (current == NULL || !current->content[i])
-	{
-		free(head);
-		return (NULL);
-	}
-	rest_line = malloc(sizeof(t_list));
-	rest_line->content = ft_calloc(ft_strlen(current->content) - i + 1, sizeof(char));
-	if (!rest_line->content)
-		return (NULL);
-	i++;
-	while (current != NULL)
-	{
-		int j = 0;
-		while (current->content[i] != '\0')
-			rest_line->content[j++] = current->content[i++];
-		current = current->next;
-		i = 0;
-	}
-	free(head);
-	return (rest_line);
+    while (1)
+    {
+        char ch;
+        // Read one byte (char) from the fd and store it in a 'ch' variable
+        // The read function returns the number of bytes read (which is 1 in this case)
+        ssize_t bytesRead = read(fd, &ch, 1);
+
+        if (bytesRead == -1)
+        {
+            break; // Error
+        }
+
+        if (bytesRead == 0)
+        {
+            if (lineLength == 0)
+                return NULL; // End of file and no data read
+            else
+                break; // End of file, data read
+        }
+
+        // If the line buffer is full, allocate a new buffer and chain it
+        if (lineLength >= lineSize)
+        {
+            size_t newSize = lineSize + BUFFER_SIZE; // Use the defined buffer size
+            char *newBuffer = (char *)malloc(newSize);
+
+            if (newBuffer == NULL)
+            {
+                perror("Memory allocation failed");
+                free(line);
+                return NULL;
+            }
+
+            if (line != NULL)
+            {
+                // Copy the data from the old buffer to the new buffer
+                memcpy(newBuffer, line, lineLength);
+                free(line); // Free the old buffer
+            }
+
+            // Update the line pointer to point to the new buffer
+            line = newBuffer;
+
+            // Update lineSize to the new size
+            lineSize = newSize;
+        }
+
+        // Append the character to the line
+        line[lineLength++] = ch;
+
+        // If a newline character is encountered, terminate the line and return it
+        if (ch == '\n')
+        {
+            line[lineLength] = '\0';
+            return line;
+        }
+    }
+
+    // Terminate the line and return it (if any data was read)
+    if (lineLength > 0)
+    {
+        line[lineLength] = '\0';
+        return line;
+    }
+
+    // No data read, or an error occurred
+    free(line);
+    return NULL;
 }
 
-char	*get_next_line(int fd)
+int main(int argc, char *argv[])
 {
-	char		*next_line;
-	static t_list	*head;
-	int			bytes_read;
+    if (argc != 3)
+    {
+        printf("Usage: %s <start_line> <end_line>\n", argv[0]);
+        return 1;
+    }
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || ft_read_fd(fd, head, &bytes_read) < 0)
-		return (NULL);
+    int startLine = atoi(argv[1]);
+    int endLine = atoi(argv[2]);
 
-	next_line = ft_filter_line(head);
-	head = ft_rest_unfiltered(head);
-	if (next_line == NULL && bytes_read == 0)
-	{
-		free(head);
-		return (NULL);
-	}
-	return (next_line);
+    // Initialize an empty linked list
+    struct Node *head = NULL;
+
+    // Open the file for reading
+    int fd = open("input.txt", O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    // Read lines from the file and insert them into the linked list
+    char *line;
+    int currentLine = 0;
+
+    while ((line = getNextLine(fd)) != NULL)
+    {
+        currentLine++;
+
+        if (currentLine >= startLine && currentLine <= endLine)
+        {
+            printf("Line %d: %s", currentLine, line);
+        }
+
+        free(line);
+
+        if (currentLine == endLine)
+        {
+            break;
+        }
+    }
+
+    close(fd);
+
+    // Free the memory allocated for the linked list
+    freeLinkedList(head);
+
+    return 0;
 }
