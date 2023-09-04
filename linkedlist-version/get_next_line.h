@@ -6,30 +6,21 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1024
-# endif
+// Define the buffer size based on the compilation flag, or use a default value if not specified
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 100 // default buffer size
+#endif
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1024
-# endif
-
-typedef struct s_list
+// Define the structure for a Node
+struct Node
 {
-    char            *content;
-    struct s_list   *next;
-}                   t_list;
+    char *data; // Pointer to dynamically allocated string
+    struct Node *next;
+};
 
-t_list *ft_lstnew(char *content);
-void ft_lstadd_back(t_list **lst, t_list *new_elem);
-void ft_lstdelone(t_list *elem);
-void	ft_lstclear(t_list **lst, void (*del)(void *));
-char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
-char	*ft_strchr(const char *s, int c);
-int read_buffer(int fd, t_list *buffer);
-char *get_next_line(int fd);
-char	*ft_strncpy(char *dest, char *src, unsigned int n);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+
 
 #endif

@@ -1,20 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-// Define the buffer size based on the compilation flag, or use a default value if not specified
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 100 // default buffer size
-#endif
-
-// Define the structure for a Node
-struct Node
-{
-    char *data; // Pointer to dynamically allocated string
-    struct Node *next;
-};
+#include "get_next_line.h"
 
 // Function to insert a new node at the beginning of the linked list
 struct Node *insertAtBeginning(struct Node *head, const char *newData)
@@ -30,7 +14,7 @@ struct Node *insertAtBeginning(struct Node *head, const char *newData)
     }
 
     // Dynamically allocate memory for the data and copy the string
-    newNode->data = strdup(newData);
+    newNode->data = ft_strdup(newData);
 
     // Set the next pointer of the new node to the current head
     newNode->next = head;
@@ -95,7 +79,7 @@ char *getNextLine(int fd)
             if (line != NULL)
             {
                 // Copy the data from the old buffer to the new buffer
-                memcpy(newBuffer, line, lineLength);
+                ft_memcpy(newBuffer, line, lineLength);
                 free(line); // Free the old buffer
             }
 
