@@ -1,3 +1,5 @@
+// THIS CODE IS STILL INCOMPLETE.
+
 #include "get_next_line.h"
 
 int	ft_read_fd(int fd, t_list **head, int *bytes_read)
