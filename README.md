@@ -6,6 +6,10 @@
 
 You must write a function that returns a line read from a file descriptor.
 
+I've written an article that provides detailed guidance on developing this project. 
+
+You can access it on [Medium](https://medium.com/@beatrizbazaglia/get-next-line-3872eb3189e6).
+
 ## 📝 Requirements
 
 **Mandatory part:**
