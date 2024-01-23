@@ -32,4 +32,5 @@ gcc -Wall -Werror -Wextra -D BUFFER_SIZE=xx get_next_line.c get_next_line_utils.
 // xx is the BUFFER_SIZE you want to test
 ```
 
+
 Disclaimer: The main purpose of this repository is to expose my code and help other students to understand what was done in each function. Therefore, this work should be used for academic reasons, by those who aim to learn, and not merely copy.
