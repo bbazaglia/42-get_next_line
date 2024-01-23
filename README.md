@@ -6,7 +6,7 @@
 
 You must write a function that returns a line read from a file descriptor.
 
-## 🛠️ Requirements
+## 📝 Requirements
 
 **Mandatory part:**
 
